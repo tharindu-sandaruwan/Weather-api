@@ -1,5 +1,6 @@
 package com.example.Weather_Api.service.impl;
 
+import com.example.Weather_Api.controller.ResponseDTO.WeatherLiveResponseDTO;
 import com.example.Weather_Api.controller.ResponseDTO.WeatherResponseDTO;
 import com.example.Weather_Api.service.WeatherService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -42,12 +43,28 @@ public class WeatherServiceImpl implements WeatherService {
         String humidity=root.path("main").path("humidity").asText();
         String pressure=root.path("main").path("pressure").asText();
 
+        JsonNode weatherNode=root.path("weather").get(0);
+        WeatherLiveResponseDTO weatherLiveResponseDTO=new WeatherLiveResponseDTO();
+        weatherLiveResponseDTO.setId(weatherNode.path("id").asLong());
+        weatherLiveResponseDTO.setMain(weatherNode.path("main").asText());
+        weatherLiveResponseDTO.setDescription(weatherNode.path("description").asText());
+        weatherLiveResponseDTO.setIcon(weatherNode.path("icon").asText());
+
+        double lon=root.path("coord").path("lon").asDouble();
+        double lat=root.path("coord").path("lat").asDouble();
+
+        String windSpeed=root.path("wind").path("speed").asText();
+
         WeatherResponseDTO weatherResponseDTO=new WeatherResponseDTO();
 
-        weatherResponseDTO.setCity(cityName);
+        weatherResponseDTO.setCityName(cityName);
         weatherResponseDTO.setTemperature(temperature);
         weatherResponseDTO.setHumidity(humidity);
         weatherResponseDTO.setPressure(pressure);
+        weatherResponseDTO.setWeather(weatherLiveResponseDTO);
+        weatherResponseDTO.setLon(lon);
+        weatherResponseDTO.setLat(lat);
+        weatherResponseDTO.setWindSpeed(windSpeed);
 
         return List.of(weatherResponseDTO);
     }
