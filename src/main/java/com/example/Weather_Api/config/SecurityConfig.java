@@ -3,9 +3,11 @@ package com.example.Weather_Api.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -30,7 +32,10 @@ public class SecurityConfig {
 
         return http
                 .csrf(AbstractHttpConfigurer::disable) //disable csrf token
-                .authorizeHttpRequests(request-> request.anyRequest().authenticated())//any request authenticated
+                .authorizeHttpRequests(request-> request
+                        .requestMatchers("register","login")
+                        .permitAll()
+                        .anyRequest().authenticated())//any request authenticated
                 .httpBasic(Customizer.withDefaults()) //for the postman
                 .sessionManagement(session->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -64,9 +69,15 @@ public class SecurityConfig {
         @Bean
         public AuthenticationProvider authenticationProvider(){
             DaoAuthenticationProvider provider =new DaoAuthenticationProvider();//database authenticated provider
-            provider.setPasswordEncoder(new BCryptPasswordEncoder(12)); 
+            provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
             provider.setUserDetailsService(userDetailsService);
             return provider;
+        }
+
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+            return configuration.getAuthenticationManager();
+
         }
 
     }
