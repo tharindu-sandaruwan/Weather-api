@@ -30,22 +30,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         return http
-                .csrf(AbstractHttpConfigurer::disable) //disable csrf token
-                .authorizeHttpRequests(request-> request
-                        .requestMatchers("register","login")
+                .cors(Customizer.withDefaults()) // Enable CORS
+                .csrf(AbstractHttpConfigurer::disable) // disable csrf token
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("register", "login")
                         .permitAll()
-                        .anyRequest().authenticated())//any request authenticated
-                .httpBasic(Customizer.withDefaults()) //for the postman
-                .sessionManagement(session->
+                        .anyRequest().authenticated()) // any request authenticated
+                .httpBasic(Customizer.withDefaults()) // for the postman
+                .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build(); //changing http is stateless
-
-        //http.formLogin(Customizer.withDefaults()) //Display default form
-
-
+                .build(); // changing http is stateless
     }
 
 //    @Bean
