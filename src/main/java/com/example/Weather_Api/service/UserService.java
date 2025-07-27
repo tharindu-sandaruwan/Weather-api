@@ -6,4 +6,5 @@ public interface UserService {
 
     Users register(Users users);
 
+    String verify(Users users);
 }
